@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  price       Decimal
+  compareAtPrice Decimal?
+  stock       Int      @default(0)
+  status      String   @default("DRAFT")
+  images      String   @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Classification
+  brand       String?
+  model       String?
+  
+  // SEO
+  slug            String?   @unique
+  metaTitle       String?
+  metaDescription String?
+  
+  orderItems  OrderItem[]
+}
+
+model ShopOrder {
+  id          Int         @id @default(autoincrement())
+  orderNumber Int         @unique // Just a secondary number, or we can remove it if ID is enough
+  customer    Customer?   @relation(fields: [customerId], references: [id])
+  customerId  String?
+  total       Decimal
+  status      String      @default("PENDING")
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String    @id @default(cuid())
+  order     ShopOrder @relation(fields: [orderId], references: [id])
+  orderId   Int
+  product   Product   @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Decimal
+}
+
+model Customer {
+  id        String      @id @default(cuid())
+  firstName String?
+  lastName  String?
+  email     String      @unique
+  phone     String?
+  orders    ShopOrder[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Settings {
+  id            String  @id @default(cuid())
+  storeName     String  @default("My Print Shop")
+  currency      String  @default("EUR")
+  taxRate       Decimal @default(20.0)
+  updatedAt     DateTime @updatedAt
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
