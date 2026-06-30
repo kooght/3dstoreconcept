@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,11 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "3D AutoParts - Impression 3D Automobile",
-  description: "Votre spécialiste de l'impression 3D pour l'automobile. Pièces sur mesure et reproductions de qualité.",
-  icons: {
-    icon: "/logo.png",
-  },
+  title: "GendTools — Outils Gendarmerie",
+  description: "Suite d'outils pratiques pour les militaires de la Gendarmerie nationale.",
 };
 
 export default function RootLayout({
@@ -26,11 +24,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    <html lang="fr">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
