@@ -2,6 +2,11 @@ import { prisma } from "@/lib/prisma";
 import EditProductForm from "@/components/admin/EditProductForm";
 import { notFound } from "next/navigation";
 
+export async function generateStaticParams() {
+  const products = await prisma.product.findMany({ select: { id: true } });
+  return products.length > 0 ? products.map((p) => ({ id: p.id })) : [{ id: "_" }];
+}
+
 export default async function EditProductPage(props: {
   params: Promise<{ id: string }>;
 }) {

@@ -1,0 +1,6 @@
+:HL["/3dstoreconcept/_next/static/chunks/411225693dcb6b1e.css","style"]
+:HL["/3dstoreconcept/_next/static/media/797e433ab948586e-s.p.29207c2f.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/3dstoreconcept/_next/static/media/caa3a2e1cccd8315-s.p.3b6cae6d.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/logo.png","image"]
+:HL["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop","image"]
+0:{"buildId":"BW9eUayv0CjZ4rLGPIg_M","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"products","paramType":null,"paramKey":"products","hasRuntimePrefetch":false,"slots":{"children":{"name":"id","paramType":"d","paramKey":"clip-garniture-porte-audi-a3-8p","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}

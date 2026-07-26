@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[43986,["/3dstoreconcept/_next/static/chunks/7c92e96509cd355e.js","/3dstoreconcept/_next/static/chunks/48f61bc1882a181b.js"],"default"]
+3:I[97367,["/3dstoreconcept/_next/static/chunks/ff1a16fafef87110.js","/3dstoreconcept/_next/static/chunks/d2be314c3ece3fbe.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+0:{"buildId":"BW9eUayv0CjZ4rLGPIg_M","rsc":["$","$1","c",{"children":[["$","$L2",null,{"product":{"id":"cms1vvea80002rhs3dijscgjn","title":"Cache vis aile - Renault Clio 4","description":"Cache vis d'aile avant, reproduction fidèle.","price":4.9,"compareAtPrice":null,"stock":0,"status":"DRAFT","images":"[]","createdAt":"$D2026-07-26T14:18:34.640Z","updatedAt":"$D2026-07-26T14:18:34.640Z","brand":"Renault","model":"Clio 4","slug":"cache-vis-aile-renault-clio-4","metaTitle":null,"metaDescription":null}}],[["$","script","script-0",{"src":"/3dstoreconcept/_next/static/chunks/48f61bc1882a181b.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
+5:null

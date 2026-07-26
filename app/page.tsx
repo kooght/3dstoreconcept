@@ -3,8 +3,6 @@ import VehicleSelector from '@/components/VehicleSelector';
 import { prisma } from '@/lib/prisma';
 import { ShoppingCart, Star } from 'lucide-react';
 
-export const revalidate = 0; // Disable static caching for now
-
 export default async function Home() {
   // Get 3 newest products sorted by date descending from DB
   const featuredProducts = await prisma.product.findMany({

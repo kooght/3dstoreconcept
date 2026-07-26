@@ -1,0 +1,65 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "app/**"
+      - "components/**"
+      - "lib/**"
+      - "prisma/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "next.config.ts"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static site
+        run: npm run build
+        env:
+          GITHUB_PAGES: "true"
+          DATABASE_URL: file:${{ github.workspace }}/prisma/dev.db
+
+      - name: Publish to repository root (Pages source: main /)
+        run: |
+          # Remove previous generated routes
+          rm -rf _next admin catalogue products _not-found
+          rm -f index.html index.txt 404.html 404 .nojekyll
+          rm -f __next*.txt next.svg vercel.svg file.svg globe.svg window.svg
+
+          cp -R out/. .
+          touch .nojekyll
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No site changes"
+          else
+            git commit -m "deploy: mise à jour du site GitHub Pages"
+            git push
+          fi

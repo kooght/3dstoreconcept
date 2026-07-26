@@ -3,7 +3,15 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Check, ShoppingCart, Truck, ShieldCheck } from 'lucide-react';
 
-export const revalidate = 0;
+export async function generateStaticParams() {
+    const products = await prisma.product.findMany({ select: { id: true, slug: true } });
+    const params = products.flatMap((p) => {
+        const entries = [{ id: p.id }];
+        if (p.slug) entries.push({ id: p.slug });
+        return entries;
+    });
+    return params.length > 0 ? params : [{ id: "_" }];
+}
 
 export default async function ProductPage(props: { params: Promise<{ id: string }> }) {
     const params = await props.params;

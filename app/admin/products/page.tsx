@@ -3,8 +3,6 @@ import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { ProductsTable, type ProductRow } from "@/components/admin/ProductsTable";
 
-export const dynamic = "force-dynamic";
-
 function parseImage(images: string): string | null {
   try {
     const parsed = JSON.parse(images);
