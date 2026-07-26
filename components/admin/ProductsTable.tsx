@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowDown,
@@ -30,12 +30,40 @@ const statusLabel: Record<string, string> = {
   ARCHIVED: "Archivé",
 };
 
+/** Ordre métier du statut (plus clair que l'ordre alphabétique anglais). */
+const statusRank: Record<string, number> = {
+  ACTIVE: 0,
+  DRAFT: 1,
+  ARCHIVED: 2,
+};
+
 function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
   if (!active) return <ArrowUpDown size={14} className="text-gray-400" />;
   return dir === "asc" ? (
-    <ArrowUp size={14} className="text-gray-800" />
+    <ArrowUp size={14} className="text-gray-900" />
   ) : (
-    <ArrowDown size={14} className="text-gray-800" />
+    <ArrowDown size={14} className="text-gray-900" />
+  );
+}
+
+function compareProducts(a: ProductRow, b: ProductRow, sortKey: SortKey): number {
+  if (sortKey === "price") {
+    return a.price - b.price;
+  }
+  if (sortKey === "title") {
+    return a.title.localeCompare(b.title, "fr", { sensitivity: "base" });
+  }
+  if (sortKey === "boutique") {
+    return a.boutique.localeCompare(b.boutique, "fr", { sensitivity: "base" });
+  }
+  // status
+  const rankA = statusRank[a.status] ?? 99;
+  const rankB = statusRank[b.status] ?? 99;
+  if (rankA !== rankB) return rankA - rankB;
+  return (statusLabel[a.status] || a.status).localeCompare(
+    statusLabel[b.status] || b.status,
+    "fr",
+    { sensitivity: "base" }
   );
 }
 
@@ -43,6 +71,12 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
   const [sortKey, setSortKey] = useState<SortKey>("title");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [query, setQuery] = useState("");
+  const [ready, setReady] = useState(false);
+
+  // Assure que le tri interactif est actif après hydratation (export statique Pages).
+  useEffect(() => {
+    setReady(true);
+  }, []);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -56,27 +90,23 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const base = q
-      ? products.filter(
-          (p) =>
+      ? products.filter((p) => {
+          const label = (statusLabel[p.status] || p.status).toLowerCase();
+          return (
             p.title.toLowerCase().includes(q) ||
             p.boutique.toLowerCase().includes(q) ||
             (p.brand || "").toLowerCase().includes(q) ||
-            p.status.toLowerCase().includes(q)
-        )
+            p.status.toLowerCase().includes(q) ||
+            label.includes(q)
+          );
+        })
       : products;
 
     return [...base].sort((a, b) => {
-      let cmp = 0;
-      if (sortKey === "price") {
-        cmp = a.price - b.price;
-      } else if (sortKey === "title") {
-        cmp = a.title.localeCompare(b.title, "fr");
-      } else if (sortKey === "boutique") {
-        cmp = a.boutique.localeCompare(b.boutique, "fr");
-      } else {
-        cmp = a.status.localeCompare(b.status, "fr");
-      }
-      return sortDir === "asc" ? cmp : -cmp;
+      const cmp = compareProducts(a, b, sortKey);
+      if (cmp !== 0) return sortDir === "asc" ? cmp : -cmp;
+      // Tri secondaire pour un réordonnancement visible
+      return a.title.localeCompare(b.title, "fr", { sensitivity: "base" });
     });
   }, [products, query, sortKey, sortDir]);
 
@@ -89,9 +119,12 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
     { key: null, label: "Accès STL", className: "text-right" },
   ];
 
+  const sortLabel =
+    headers.find((h) => h.key === sortKey)?.label || "Produit";
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
         <input
           type="search"
           value={query}
@@ -99,6 +132,16 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
           placeholder="Filtrer les produits…"
           className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
         />
+        <p className="text-xs text-gray-500 whitespace-nowrap">
+          {ready ? (
+            <>
+              Tri : <span className="font-semibold text-gray-800">{sortLabel}</span>{" "}
+              ({sortDir === "asc" ? "croissant" : "décroissant"}) — cliquez une colonne
+            </>
+          ) : (
+            "Chargement du tri…"
+          )}
+        </p>
       </div>
 
       <div className="overflow-x-auto">
@@ -106,19 +149,24 @@ export function ProductsTable({ products }: { products: ProductRow[] }) {
           <thead className="bg-gray-50 text-xs uppercase text-gray-500 font-semibold border-b border-gray-200">
             <tr>
               {headers.map((h) => (
-                <th key={h.label} className={`px-6 py-3 ${h.className || ""}`}>
+                <th key={h.label} className={`px-2 py-2 ${h.className || ""}`}>
                   {h.key ? (
                     <button
                       type="button"
                       onClick={() => toggleSort(h.key!)}
-                      className="inline-flex items-center gap-1.5 hover:text-gray-900 transition-colors"
+                      className={`w-full px-4 py-2 inline-flex items-center gap-1.5 rounded-md transition-colors cursor-pointer select-none ${
+                        sortKey === h.key
+                          ? "bg-gray-200 text-gray-900"
+                          : "hover:bg-gray-100 hover:text-gray-900"
+                      } ${h.className?.includes("text-right") ? "justify-end" : "justify-start"}`}
                       aria-label={`Trier par ${h.label}`}
+                      aria-pressed={sortKey === h.key}
                     >
                       {h.label}
                       <SortIcon active={sortKey === h.key} dir={sortDir} />
                     </button>
                   ) : (
-                    h.label
+                    <span className="px-4 py-2 inline-block">{h.label}</span>
                   )}
                 </th>
               ))}
