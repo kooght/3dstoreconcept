@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { ProductsTableLoader } from "@/components/admin/ProductsTableLoader";
-import type { ProductRow } from "@/components/admin/ProductsTable";
+import { ProductsTable, type ProductRow } from "@/components/admin/ProductsTable";
 
 function parseImage(images: string): string | null {
   try {
@@ -49,7 +48,7 @@ export default async function ProductsPage() {
         </Link>
       </div>
 
-      <ProductsTableLoader products={rows} />
+      <ProductsTable products={rows} />
     </div>
   );
 }
