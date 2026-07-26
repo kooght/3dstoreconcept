@@ -1,11 +1,20 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { products } from '@/lib/mock-data';
 import { Star, Filter, X } from 'lucide-react';
 
 export default function CataloguePage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-white p-8 text-sm text-gray-500">Chargement du catalogue…</div>}>
+            <CatalogueContent />
+        </Suspense>
+    );
+}
+
+function CatalogueContent() {
     const searchParams = useSearchParams();
     const make = searchParams.get('make');
     const model = searchParams.get('model');

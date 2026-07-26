@@ -231,9 +231,13 @@ export default function EditProductForm({ product }: { product: Product }) {
 }
 
 function BrandModelSelect({ defaultBrand, defaultModel }: { defaultBrand: string | null, defaultModel: string | null }) {
-    const [selectedBrand, setSelectedBrand] = useState<CarBrand | ''>((defaultBrand as CarBrand) || '');
-    // Ensure default model is valid for the brand, otherwise clear it
-    const initialModel = (defaultBrand && defaultModel && CAR_BRANDS[defaultBrand as CarBrand]?.includes(defaultModel)) ? defaultModel : '';
+    const brandKey = (defaultBrand && defaultBrand in CAR_BRANDS)
+        ? (defaultBrand as CarBrand)
+        : '';
+    const [selectedBrand, setSelectedBrand] = useState<CarBrand | ''>(brandKey);
+    const brandModels: string[] = brandKey ? [...CAR_BRANDS[brandKey]] : [];
+    const initialModel =
+        defaultModel && brandModels.includes(defaultModel) ? defaultModel : '';
 
     // We don't strictly need state for model if we just want to reset it when brand changes, but controlled input is nicer.
     // However, for a simple form submission without intricate state logic, we can just use key to reset.
